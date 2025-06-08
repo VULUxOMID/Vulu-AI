@@ -1,280 +1,218 @@
-# 🤖 Vulu.ai - Commercial AI Assistant Platform
+# 🤖 J.A.R.V.I.S - Personal AI Assistant
 
-> Transform your personal AI assistant into a profitable SaaS business
+**Just Another Rather Very Intelligent System** - A sophisticated personal AI assistant built with Next.js, featuring advanced voice interaction, computer vision, and persistent memory.
 
-## 🌟 **What is Vulu.ai?**
+## ✨ Key Features
 
-Vulu.ai is a **commercial-grade AI assistant platform** that combines:
-- **🎯 Real-time voice conversations** with Google Neural TTS
-- **👁️ Live vision capabilities** (camera + screen sharing)
-- **🧠 Persistent memory** across sessions
-- **⚡ Instant interruption detection**
-- **💳 Subscription billing** with Stripe
-- **📊 Advanced analytics** and admin dashboard
+### 🧠 **Advanced AI with Memory**
+- **Persistent Memory**: Remembers your name, preferences, and personal facts across sessions
+- **Conversation History**: Maintains context from previous conversations
+- **Intelligent Learning**: Automatically extracts and stores personal information
 
-Built with Next.js, TypeScript, Prisma, and powered entirely by Google AI services.
+### 🎤 **Superior Voice Processing**
+- **Multi-Tier TTS**: Google Cloud Neural voices → ResponsiveVoice → Browser Premium → Fallback
+- **Smart Interruption**: Automatically stops speaking when you start talking
+- **Premium Voice Selection**: Intelligently selects the highest quality available voice
 
----
+### 👁️ **Live Vision Capabilities**
+- **Real-time Analysis**: Camera and screen sharing with AI vision
+- **Multi-modal AI**: Combines text, voice, and vision for comprehensive understanding
+- **Auto-capture**: Continuous analysis of video feeds
 
-## 🚀 **Key Features**
+### 🚀 **Modern Interface**
+- **Responsive Design**: Beautiful, modern UI with real-time status indicators
+- **Keyboard Shortcuts**: `Ctrl + Space` to toggle voice, `Escape` to stop
+- **Debug Mode**: Comprehensive status monitoring and error handling
 
-### 🎯 **For Users**
-- **Voice Intelligence**: Natural conversations with ultra-realistic TTS
-- **Live Vision**: Real-time camera and screen sharing analysis
-- **Persistent Memory**: Remembers preferences and context
-- **Multi-Platform**: Works on desktop, mobile, and tablets
-- **Credit System**: Transparent usage tracking
-- **Flexible Plans**: Weekly and monthly subscriptions
+## 📦 Installation
 
-### 📊 **For Business Owners**
-- **Admin Dashboard**: Real-time analytics and monitoring
-- **Revenue Tracking**: Subscription management and profit analysis
-- **Usage Analytics**: Detailed insights into user behavior
-- **Cost Monitoring**: Track Google AI API expenses
-- **User Management**: Complete customer lifecycle management
-- **Stripe Integration**: Secure payment processing
+### Prerequisites
 
----
+- **Node.js** 18+ and npm
+- **Python** 3.8+ (for Google Cloud TTS server)
+- **Google AI API Key** (for Gemini)
+- **Google Cloud Account** (optional, for premium TTS)
 
-## 🏗️ **Technology Stack**
+### Quick Setup
 
-### **Frontend**
-- **Next.js 14** with App Router
-- **TypeScript** for type safety
-- **Tailwind CSS** for styling
-- **Heroicons** for UI icons
-
-### **Backend**
-- **Next.js API Routes**
-- **Prisma** ORM with PostgreSQL
-- **NextAuth.js** for authentication
-- **Stripe** for payments
-
-### **AI Services**
-- **Google Gemini Vision** for multimodal AI
-- **Google Cloud TTS** for voice synthesis
-- **Web Speech API** for voice recognition
-
-### **Infrastructure**
-- **Vercel** for deployment (recommended)
-- **Supabase** for PostgreSQL database
-- **Stripe** for payment processing
-
----
-
-## 🎯 **Quick Start**
-
-### 1. **Installation**
-```bash
-git clone <your-repo-url>
-cd vulu-ai
-npm install
-```
-
-### 2. **Environment Setup**
-Create `.env.local`:
-```env
-# Database
-DATABASE_URL="postgresql://user:password@localhost:5432/vulu_ai"
-
-# Google AI
-GOOGLE_AI_API_KEY="your_google_ai_api_key"
-
-# NextAuth
-NEXTAUTH_SECRET="your_nextauth_secret"
-NEXTAUTH_URL="http://localhost:3000"
-
-# Stripe
-STRIPE_SECRET_KEY="sk_test_..."
-STRIPE_PUBLISHABLE_KEY="pk_test_..."
-STRIPE_WEBHOOK_SECRET="whsec_..."
-
-# Google OAuth (optional)
-GOOGLE_CLIENT_ID="your_google_client_id"
-GOOGLE_CLIENT_SECRET="your_google_client_secret"
-```
-
-### 3. **Database Setup**
-```bash
-npx prisma generate
-npx prisma db push
-```
-
-### 4. **Start Development**
-```bash
-npm run dev
-```
-
-Visit `http://localhost:3000` to see your Vulu.ai platform!
-
----
-
-## 💰 **Business Model**
-
-### **Pricing Structure**
-- **Weekly Plan**: $9.99/week (1,000 credits)
-- **Monthly Plan**: $29.99/month (5,000 credits)
-
-### **Credit Usage**
-- **Text Messages**: 1 credit per message
-- **Vision Analysis**: 3 credits per analysis
-- **Voice Responses**: 1 credit per TTS generation
-
-### **Revenue Projections**
-With 1,000 active users at 70% monthly conversion:
-- **Monthly Revenue**: ~$20,993
-- **Google AI Costs**: ~$2,500
-- **Net Profit**: ~$18,493/month
-
----
-
-## 📊 **Admin Dashboard**
-
-Access the admin dashboard at `/admin` to monitor:
-
-- **📈 Real-time Analytics**: User growth, revenue, usage stats
-- **💰 Revenue Tracking**: Subscription analytics and profit margins
-- **🔧 System Health**: API latency, uptime, error rates
-- **👥 User Management**: Customer insights and support tools
-- **💳 Payment Analytics**: Stripe integration and billing reports
-
----
-
-## 🚀 **Deployment**
-
-### **Recommended: Vercel + Supabase**
-
-1. **Deploy to Vercel**:
+1. **Clone and Install**
    ```bash
-   npm install -g vercel
-   vercel --prod
+   git clone <repository-url>
+   cd vulu-ai
+   npm install
    ```
 
-2. **Set up Supabase**:
-   - Create account at [supabase.com](https://supabase.com)
-   - Create new project
-   - Copy connection string to `DATABASE_URL`
+2. **Environment Configuration**
+   Create `.env.local`:
+   ```env
+   GOOGLE_AI_API_KEY=your_google_ai_api_key_here
+   ```
 
-3. **Configure Domain**:
-   - Point `vulu.ai` to your Vercel deployment
-   - Update `NEXTAUTH_URL` to your domain
+3. **Start Development Server**
+   ```bash
+   npm run dev
+   ```
 
-4. **Set up Stripe Webhooks**:
-   - Configure webhook endpoint: `https://vulu.ai/api/webhooks/stripe`
-   - Update `STRIPE_WEBHOOK_SECRET`
+4. **Access JARVIS**
+   Open [http://localhost:3000](http://localhost:3000)
 
----
+## 🔧 Advanced Setup (Optional)
 
-## 🔧 **Configuration**
+### Google Cloud TTS (High-Quality Voices)
 
-### **Subscription Plans**
-Edit plans in `src/app/pricing/page.tsx`:
-```typescript
-const plans = [
-  {
-    name: 'Weekly Plan',
-    price: 9.99,
-    credits: 1000,
-    stripePriceId: 'price_weekly'
-  },
-  // Add more plans...
-]
+For premium neural voices, set up Google Cloud TTS:
+
+1. **Install Python Dependencies**
+   ```bash
+   pip install flask flask-cors google-auth requests
+   ```
+
+2. **Google Cloud Setup**
+   - Create a Google Cloud project
+   - Enable the Text-to-Speech API
+   - Create a service account
+   - Download the JSON credentials as `jarvis-tts-credentials.json`
+
+3. **Start TTS Server**
+   ```bash
+   python google_cloud_tts_server.py
+   ```
+
+4. **Test TTS Server**
+   ```bash
+   curl http://localhost:5050/health
+   ```
+
+## 🎯 Usage Guide
+
+### Basic Chat
+- Type messages or use voice input
+- JARVIS remembers your conversations and learns about you
+- Responses are automatically spoken aloud
+
+### Voice Commands
+- **Start Listening**: Click microphone or press `Ctrl + Space`
+- **Stop Speaking**: Press `Escape` or click stop button
+- **Auto-send**: Final voice transcripts are automatically sent
+
+### Vision Features
+- **Camera**: Enable camera for real-time face-to-face interaction
+- **Screen Share**: Share your screen for JARVIS to see what you're working on
+- **Analysis**: Click "Analyze" button for AI vision analysis
+
+### Memory System
+- **Introduction**: "My name is John" → JARVIS remembers your name
+- **Preferences**: "I like pizza" → Stored in memory
+- **Facts**: "I work as a developer" → Remembered for context
+
+### Keyboard Shortcuts
+- `Ctrl + Space`: Toggle voice listening
+- `Escape`: Stop current speech/listening
+- `Enter`: Send message
+
+## 🏗️ Architecture
+
+### Frontend (Next.js)
+- **React Components**: Modern React with TypeScript
+- **Custom Hooks**: `useVoiceAndMedia` for advanced capabilities
+- **Real-time UI**: Status indicators and debug information
+
+### Backend APIs
+- **`/api/chat`**: Google Gemini integration with memory
+- **`/api/vision`**: Computer vision analysis
+- **`/api/tts`**: Text-to-speech configuration
+
+### External Services
+- **Google Gemini**: Advanced AI conversation
+- **Google Cloud TTS**: Premium neural voices
+- **Web Speech API**: Browser-based voice recognition
+- **ResponsiveVoice**: Fallback TTS service
+
+## 🛠️ Development
+
+### Project Structure
+```
+src/
+├── app/
+│   ├── api/          # API endpoints
+│   ├── chat/         # Chat interface
+│   └── capabilities/ # Feature overview
+├── hooks/            # Custom React hooks
+└── types/            # TypeScript definitions
 ```
 
-### **Credit Costs**
-Adjust credit usage in `src/app/app/page.tsx`:
-```typescript
-// Text message: 1 credit
-setCurrentCredits(prev => Math.max(0, prev - 1))
+### Key Files
+- **`src/hooks/useVoiceAndMedia.ts`**: Core voice/media functionality
+- **`src/app/api/chat/route.ts`**: AI chat with memory
+- **`src/app/chat/page.tsx`**: Main chat interface
+- **`google_cloud_tts_server.py`**: Premium TTS server
 
-// Vision analysis: 3 credits  
-setCurrentCredits(prev => Math.max(0, prev - 3))
-```
+### Adding Features
+1. **New API Endpoints**: Add to `src/app/api/`
+2. **UI Components**: Extend chat interface
+3. **Voice Commands**: Modify voice processing logic
+4. **Memory Types**: Enhance user memory structure
 
----
+## 🚨 Troubleshooting
 
-## 📱 **API Endpoints**
+### Common Issues
 
-### **User Management**
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `GET /api/user/profile` - Get user profile
-- `PUT /api/user/profile` - Update user profile
+**Voice Recognition Not Working**
+- Ensure microphone permissions are granted
+- Check browser compatibility (Chrome/Edge recommended)
+- Refresh page and allow microphone access
 
-### **Subscriptions**
-- `POST /api/subscriptions/create` - Create subscription
-- `GET /api/subscriptions/status` - Get subscription status
-- `POST /api/subscriptions/cancel` - Cancel subscription
+**TTS Quality Poor**
+- Set up Google Cloud TTS server for premium voices
+- Check network connection for external TTS services
+- Verify browser voice support
 
-### **Usage Tracking**
-- `POST /api/usage/record` - Record usage
-- `GET /api/usage/stats` - Get usage statistics
-- `POST /api/credits/deduct` - Deduct credits
+**API Errors**
+- Verify Google AI API key in `.env.local`
+- Check API quotas and billing
+- Ensure internet connectivity
 
-### **Admin**
-- `GET /api/admin/analytics` - Get analytics data
-- `GET /api/admin/users` - Get user list
-- `GET /api/admin/revenue` - Get revenue data
+**Memory Not Persisting**
+- Check browser localStorage support
+- Verify no private/incognito mode restrictions
+- Clear browser cache if corrupted
 
----
+### Debug Mode
+Enable debug mode in the chat interface to see:
+- Speech recognition status
+- Permission states
+- Memory contents
+- API call status
+- Error messages
 
-## 🛡️ **Security**
+## 🔒 Privacy & Security
 
-- **Authentication**: NextAuth.js with secure session management
-- **Authorization**: Role-based access control (USER/ADMIN)
-- **Data Protection**: Encrypted sensitive data
-- **Rate Limiting**: API endpoint protection
-- **CORS**: Proper cross-origin configuration
-- **Input Validation**: Sanitized user inputs
+- **Local Storage**: User memory stored locally in browser
+- **No Data Transmission**: Personal data stays on your device
+- **API Security**: Only necessary data sent to AI services
+- **Microphone Privacy**: Audio not stored, only processed
 
----
-
-## 📈 **Scaling**
-
-### **Performance Optimization**
-- **CDN**: Static assets via Vercel Edge Network
-- **Database**: Connection pooling with Prisma
-- **Caching**: Redis for session and API caching
-- **Monitoring**: Real-time error tracking
-
-### **Infrastructure Scaling**
-- **Horizontal Scaling**: Multiple Vercel deployments
-- **Database**: PostgreSQL read replicas
-- **AI Services**: Google Cloud quotas and rate limits
-- **Payment Processing**: Stripe's global infrastructure
-
----
-
-## 🤝 **Contributing**
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+This project is for personal use only. Commercial use requires proper licensing.
+
+## 🙏 Acknowledgments
+
+- **Google Gemini**: Advanced AI capabilities
+- **Web Speech API**: Browser voice recognition
+- **Google Cloud TTS**: Premium voice synthesis
+- **Next.js**: Modern React framework
 
 ---
 
-## 📞 **Support**
+**Built with ❤️ for personal AI assistance**
 
-- **Documentation**: [docs.vulu.ai](https://docs.vulu.ai)
-- **Support Email**: support@vulu.ai
-- **Discord**: [discord.gg/vulu-ai](https://discord.gg/vulu-ai)
-
----
-
-## 📄 **License**
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🎉 **Success Story**
-
-*"Started as a personal Jarvis assistant, transformed into a profitable SaaS platform serving thousands of users worldwide."*
-
-**Ready to launch your AI empire?** 🚀
-
----
-
-**Made with ❤️ by the Vulu.ai team**
+*"Sometimes you gotta run before you can walk."* - Tony Stark

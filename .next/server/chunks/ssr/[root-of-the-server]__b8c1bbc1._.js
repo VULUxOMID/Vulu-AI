@@ -43,46 +43,379 @@ __turbopack_context__.s({
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react.js [app-ssr] (ecmascript)");
 'use client';
 ;
-function useVoiceAndMedia() {
-    // Speech Recognition State
+function useVoiceAndMedia({ onTranscript, onError, onVisionCapture } = {}) {
+    // Voice Recognition States
     const [isListening, setIsListening] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [transcript, setTranscript] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
-    const recognitionRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
-    // Text to Speech State
     const [isSpeaking, setIsSpeaking] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
-    const synthRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
-    // Media State
+    const [transcript, setTranscript] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
+    const [interimTranscript, setInterimTranscript] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
+    // Media States
+    const [hasVideoPermission, setHasVideoPermission] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [isVideoActive, setIsVideoActive] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [videoMode, setVideoMode] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
+    // Status and Error States
+    const [permissionStatus, setPermissionStatus] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('unknown');
+    const [lastError, setLastError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [debugInfo, setDebugInfo] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])({});
+    // Refs for media and recognition
+    const recognitionRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
     const videoRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
-    const [isCameraActive, setIsCameraActive] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [isScreenSharing, setIsScreenSharing] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
     const streamRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
-    // Error State
-    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
-    // Initialize Speech Recognition
+    const canvasRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
+    const contextRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
+    const currentAudioRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
+    const isProcessingRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(false);
+    // Memory and conversation state
+    const [userMemory, setUserMemory] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])({
+        preferences: {},
+        facts: []
+    });
+    const conversationHistoryRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])([]);
+    // Load persistent memory on mount
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
-        if ("undefined" !== 'undefined' && 'webkitSpeechRecognition' in window) {
-            "TURBOPACK unreachable";
-        }
-        // Initialize Speech Synthesis
-        if ("undefined" !== 'undefined' && 'speechSynthesis' in window) {
-            "TURBOPACK unreachable";
+        try {
+            const savedMemory = localStorage.getItem('jarvis_memory');
+            if (savedMemory) {
+                const memory = JSON.parse(savedMemory);
+                setUserMemory(memory);
+                console.log('🧠 Loaded user memory:', memory);
+            }
+            const savedConversation = localStorage.getItem('jarvis_conversations');
+            if (savedConversation) {
+                conversationHistoryRef.current = JSON.parse(savedConversation);
+                console.log('💬 Loaded conversation history');
+            }
+        } catch (error) {
+            console.error('Failed to load persistent memory:', error);
         }
     }, []);
-    // Speech Recognition Functions
-    const startListening = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(()=>{
-        if (recognitionRef.current && !isListening) {
-            setTranscript('');
-            setError(null);
-            try {
-                recognitionRef.current.start();
-                setIsListening(true);
-            } catch (err) {
-                setError('Could not start speech recognition');
-            }
+    // Save memory to localStorage
+    const saveMemory = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(()=>{
+        try {
+            localStorage.setItem('jarvis_memory', JSON.stringify(userMemory));
+            localStorage.setItem('jarvis_conversations', JSON.stringify(conversationHistoryRef.current));
+        } catch (error) {
+            console.error('Failed to save memory:', error);
         }
     }, [
-        isListening
+        userMemory
     ]);
+    // Enhanced TTS with multiple fallbacks
+    const speak = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(async (text)=>{
+        if (!text.trim()) return false;
+        console.log('🗣️ Speaking:', text);
+        setIsSpeaking(true);
+        isProcessingRef.current = true;
+        try {
+            // Get TTS configuration from API
+            const response = await fetch('/api/tts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    text
+                })
+            });
+            if (!response.ok) {
+                throw new Error('TTS API failed');
+            }
+            const { config } = await response.json();
+            // Try each fallback in order
+            for (const fallback of config.fallbacks){
+                if (!isProcessingRef.current) break; // Interrupted
+                const success = await tryTTSFallback(fallback, text);
+                if (success) {
+                    console.log(`✅ TTS success with: ${fallback.type}`);
+                    return true;
+                }
+            }
+            console.warn('❌ All TTS fallbacks failed');
+            setLastError('Voice synthesis unavailable');
+            return false;
+        } catch (error) {
+            console.error('🚨 TTS Error:', error);
+            setLastError('Voice synthesis error');
+            return false;
+        } finally{
+            setIsSpeaking(false);
+            isProcessingRef.current = false;
+        }
+    }, []);
+    // Try individual TTS fallback
+    const tryTTSFallback = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(async (fallback, text)=>{
+        try {
+            switch(fallback.type){
+                case 'google-cloud':
+                    return await tryGoogleCloudTTS(fallback, text);
+                case 'responsive-voice':
+                    return await tryResponsiveVoice(fallback, text);
+                case 'browser-premium':
+                    return await tryBrowserPremiumTTS(fallback, text);
+                case 'browser-fallback':
+                    return await tryBrowserFallbackTTS(fallback, text);
+                default:
+                    return false;
+            }
+        } catch (error) {
+            console.error(`TTS fallback ${fallback.type} failed:`, error);
+            return false;
+        }
+    }, []);
+    // Google Cloud TTS
+    const tryGoogleCloudTTS = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(async (fallback, text)=>{
+        try {
+            console.log('🌟 Trying Google Cloud TTS...');
+            const response = await fetch(fallback.endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    text,
+                    voice: fallback.voice
+                })
+            });
+            if (response.ok) {
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+                return new Promise((resolve)=>{
+                    const audio = new Audio(audioUrl);
+                    audio.volume = fallback.settings.volume;
+                    currentAudioRef.current = audio;
+                    audio.onended = ()=>{
+                        URL.revokeObjectURL(audioUrl);
+                        currentAudioRef.current = null;
+                        console.log('🔊 Google TTS playback finished');
+                        resolve(true);
+                    };
+                    audio.onerror = ()=>{
+                        URL.revokeObjectURL(audioUrl);
+                        currentAudioRef.current = null;
+                        resolve(false);
+                    };
+                    if (!isProcessingRef.current) {
+                        URL.revokeObjectURL(audioUrl);
+                        resolve(false);
+                        return;
+                    }
+                    audio.play().catch(()=>resolve(false));
+                });
+            }
+            return false;
+        } catch (error) {
+            console.log('❌ Google TTS unavailable');
+            return false;
+        }
+    }, []);
+    // ResponsiveVoice TTS
+    const tryResponsiveVoice = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(async (fallback, text)=>{
+        return new Promise((resolve)=>{
+            if (!window.responsiveVoice?.voiceSupport()) {
+                resolve(false);
+                return;
+            }
+            console.log('🗣️ Using ResponsiveVoice');
+            const selectedVoice = fallback.voices[0];
+            window.responsiveVoice.speak(text, selectedVoice, {
+                rate: fallback.settings.rate,
+                pitch: fallback.settings.pitch,
+                volume: fallback.settings.volume,
+                onstart: ()=>console.log('✅ ResponsiveVoice started'),
+                onend: ()=>{
+                    console.log('🔊 ResponsiveVoice finished');
+                    resolve(true);
+                },
+                onerror: ()=>resolve(false)
+            });
+        });
+    }, []);
+    // Browser Premium TTS
+    const tryBrowserPremiumTTS = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(async (fallback, text)=>{
+        if (!('speechSynthesis' in window)) return false;
+        try {
+            const voices = await getAvailableVoices();
+            const premiumVoice = findPremiumVoice(voices, fallback.voicePreferences);
+            if (premiumVoice) {
+                return new Promise((resolve)=>{
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.voice = premiumVoice;
+                    utterance.rate = fallback.settings.rate;
+                    utterance.pitch = fallback.settings.pitch;
+                    utterance.volume = fallback.settings.volume;
+                    utterance.lang = fallback.settings.lang || 'en-US';
+                    utterance.onend = ()=>{
+                        console.log(`🔊 Browser premium TTS finished: ${premiumVoice.name}`);
+                        resolve(true);
+                    };
+                    utterance.onerror = ()=>resolve(false);
+                    speechSynthesis.speak(utterance);
+                    console.log(`Using premium voice: ${premiumVoice.name}`);
+                });
+            }
+            return false;
+        } catch (error) {
+            return false;
+        }
+    }, []);
+    // Browser Fallback TTS
+    const tryBrowserFallbackTTS = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(async (fallback, text)=>{
+        if (!('speechSynthesis' in window)) return false;
+        return new Promise((resolve)=>{
+            speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = fallback.settings.rate;
+            utterance.pitch = fallback.settings.pitch;
+            utterance.volume = fallback.settings.volume;
+            utterance.onend = ()=>{
+                console.log('🔊 Browser fallback TTS finished');
+                resolve(true);
+            };
+            utterance.onerror = ()=>resolve(false);
+            speechSynthesis.speak(utterance);
+        });
+    }, []);
+    // Get available voices
+    const getAvailableVoices = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(()=>{
+        return new Promise((resolve)=>{
+            const voices = speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                resolve(voices);
+                return;
+            }
+            speechSynthesis.addEventListener('voiceschanged', ()=>{
+                resolve(speechSynthesis.getVoices());
+            }, {
+                once: true
+            });
+        });
+    }, []);
+    // Find premium voice
+    const findPremiumVoice = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])((voices, preferences)=>{
+        for (const preference of preferences){
+            const voice = voices.find((voice)=>voice.name.includes(preference));
+            if (voice) return voice;
+        }
+        return null;
+    }, []);
+    // Stop current speech
+    const stopSpeaking = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(()=>{
+        console.log('🛑 Stopping speech...');
+        // Stop all TTS methods
+        if (currentAudioRef.current) {
+            currentAudioRef.current.pause();
+            currentAudioRef.current = null;
+        }
+        if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
+        }
+        if (window.responsiveVoice) {
+            window.responsiveVoice.cancel();
+        }
+        setIsSpeaking(false);
+        isProcessingRef.current = false;
+    }, []);
+    // Initialize speech recognition with smart interruption
+    const initSpeechRecognition = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(()=>{
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            setLastError('Speech recognition not supported');
+            return false;
+        }
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+        recognition.onstart = ()=>{
+            console.log('🎤 Speech recognition started');
+            setPermissionStatus('granted');
+            setDebugInfo((prev)=>({
+                    ...prev,
+                    speechStatus: 'Listening...'
+                }));
+        };
+        recognition.onresult = (event)=>{
+            let finalTranscript = '';
+            let interimTranscript = '';
+            for(let i = event.resultIndex; i < event.results.length; i++){
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript;
+                } else {
+                    interimTranscript += transcript;
+                }
+            }
+            // SMART INTERRUPTION: Stop JARVIS immediately when user starts speaking
+            if (interimTranscript.trim().length > 0 && (isSpeaking || isProcessingRef.current)) {
+                console.log('🚫 User interruption detected - stopping JARVIS');
+                stopSpeaking();
+            }
+            setTranscript(finalTranscript);
+            setInterimTranscript(interimTranscript);
+            if (onTranscript) {
+                onTranscript(finalTranscript || interimTranscript, !!finalTranscript);
+            }
+            // Auto-send final transcripts
+            if (finalTranscript.trim()) {
+                console.log('📝 Final transcript:', finalTranscript);
+            // Could trigger auto-send here
+            }
+        };
+        recognition.onerror = (event)=>{
+            console.error('🚨 Speech recognition error:', event.error);
+            if (event.error === 'not-allowed' || event.error === 'permission-denied') {
+                setPermissionStatus('denied');
+                setLastError('Microphone permission denied. Please refresh and allow access.');
+            } else if (event.error === 'network') {
+                setLastError('Network error during speech recognition');
+            } else {
+                setLastError(`Speech recognition error: ${event.error}`);
+            }
+            setIsListening(false);
+            setDebugInfo((prev)=>({
+                    ...prev,
+                    speechStatus: `Error: ${event.error}`
+                }));
+            if (onError) {
+                onError(event.error);
+            }
+        };
+        recognition.onend = ()=>{
+            console.log('🎤 Speech recognition ended');
+            setIsListening(false);
+            setDebugInfo((prev)=>({
+                    ...prev,
+                    speechStatus: 'Stopped'
+                }));
+        };
+        recognitionRef.current = recognition;
+        return true;
+    }, [
+        isSpeaking,
+        onTranscript,
+        onError,
+        stopSpeaking
+    ]);
+    // Start listening
+    const startListening = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(async ()=>{
+        if (!recognitionRef.current) {
+            const initialized = initSpeechRecognition();
+            if (!initialized) return false;
+        }
+        try {
+            recognitionRef.current?.start();
+            setIsListening(true);
+            setLastError(null);
+            return true;
+        } catch (error) {
+            console.error('Failed to start listening:', error);
+            setLastError('Failed to start speech recognition');
+            return false;
+        }
+    }, [
+        initSpeechRecognition
+    ]);
+    // Stop listening
     const stopListening = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(()=>{
         if (recognitionRef.current && isListening) {
             recognitionRef.current.stop();
@@ -91,156 +424,167 @@ function useVoiceAndMedia() {
     }, [
         isListening
     ]);
-    // Text to Speech Functions
-    const speak = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])((text)=>{
-        if (synthRef.current) {
-            // Stop any ongoing speech
-            synthRef.current.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.9;
-            utterance.pitch = 1;
-            utterance.volume = 0.8;
-            // Try to find a good voice (prefer neural/enhanced voices)
-            const voices = synthRef.current.getVoices();
-            const preferredVoice = voices.find((voice)=>voice.name.includes('Neural') || voice.name.includes('Enhanced') || voice.name.includes('Google')) || voices.find((voice)=>voice.lang.startsWith('en'));
-            if (preferredVoice) {
-                utterance.voice = preferredVoice;
-            }
-            utterance.onstart = ()=>setIsSpeaking(true);
-            utterance.onend = ()=>setIsSpeaking(false);
-            utterance.onerror = ()=>{
-                setIsSpeaking(false);
-                setError('Text-to-speech error');
-            };
-            synthRef.current.speak(utterance);
+    // Toggle listening
+    const toggleListening = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(()=>{
+        if (isListening) {
+            stopListening();
+        } else {
+            startListening();
         }
-    }, []);
-    const stopSpeaking = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(()=>{
-        if (synthRef.current) {
-            synthRef.current.cancel();
-            setIsSpeaking(false);
-        }
-    }, []);
-    // Camera Functions
+    }, [
+        isListening,
+        startListening,
+        stopListening
+    ]);
+    // Camera access
     const startCamera = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(async ()=>{
         try {
-            setError(null);
             const stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    width: 640,
+                    height: 480
+                },
+                audio: false
+            });
+            streamRef.current = stream;
+            setIsVideoActive(true);
+            setVideoMode('camera');
+            setHasVideoPermission(true);
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+            }
+            console.log('📹 Camera started');
+            return true;
+        } catch (error) {
+            console.error('Camera error:', error);
+            setLastError('Camera access denied or unavailable');
+            return false;
+        }
+    }, []);
+    // Screen sharing
+    const startScreenShare = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(async ()=>{
+        try {
+            const stream = await navigator.mediaDevices.getDisplayMedia({
                 video: {
                     width: 1280,
                     height: 720
                 },
                 audio: false
             });
+            streamRef.current = stream;
+            setIsVideoActive(true);
+            setVideoMode('screen');
             if (videoRef.current) {
                 videoRef.current.srcObject = stream;
-                streamRef.current = stream;
-                setIsCameraActive(true);
             }
-        } catch (err) {
-            setError('Could not access camera');
+            console.log('🖥️ Screen sharing started');
+            return true;
+        } catch (error) {
+            console.error('Screen share error:', error);
+            setLastError('Screen sharing denied or unavailable');
+            return false;
         }
     }, []);
-    const stopCamera = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(()=>{
+    // Stop video
+    const stopVideo = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(()=>{
         if (streamRef.current) {
             streamRef.current.getTracks().forEach((track)=>track.stop());
             streamRef.current = null;
-            setIsCameraActive(false);
-            if (videoRef.current) {
-                videoRef.current.srcObject = null;
-            }
         }
+        if (videoRef.current) {
+            videoRef.current.srcObject = null;
+        }
+        setIsVideoActive(false);
+        setVideoMode(null);
+        console.log('📹 Video stopped');
     }, []);
-    const capturePhoto = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(()=>{
-        if (videoRef.current && isCameraActive) {
-            const canvas = document.createElement('canvas');
-            const video = videoRef.current;
+    // Capture current video frame
+    const captureFrame = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(()=>{
+        if (!videoRef.current || !canvasRef.current || !contextRef.current) {
+            return null;
+        }
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+        const context = contextRef.current;
+        if (video.readyState >= 2) {
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-            const ctx = canvas.getContext('2d');
-            if (ctx) {
-                ctx.drawImage(video, 0, 0);
-                return canvas.toDataURL('image/jpeg', 0.8);
-            }
+            context.drawImage(video, 0, 0);
+            return canvas.toDataURL('image/jpeg', 0.8);
         }
         return null;
+    }, []);
+    // Analyze current view with AI
+    const analyzeCurrentView = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(async (context = '')=>{
+        const imageData = captureFrame();
+        if (!imageData) {
+            setLastError('No video frame available to analyze');
+            return null;
+        }
+        if (onVisionCapture) {
+            onVisionCapture(imageData, context);
+        }
+        return imageData;
     }, [
-        isCameraActive
+        captureFrame,
+        onVisionCapture
     ]);
-    // Screen Sharing Functions
-    const startScreenShare = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(async ()=>{
-        try {
-            setError(null);
-            const stream = await navigator.mediaDevices.getDisplayMedia({
-                video: true,
-                audio: false
-            });
-            if (videoRef.current) {
-                videoRef.current.srcObject = stream;
-                streamRef.current = stream;
-                setIsScreenSharing(true);
-                // Handle screen share end
-                stream.getVideoTracks()[0].onended = ()=>{
-                    stopScreenShare();
-                };
-            }
-        } catch (err) {
-            setError('Could not start screen sharing');
-        }
-    }, []);
-    const stopScreenShare = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(()=>{
-        if (streamRef.current) {
-            streamRef.current.getTracks().forEach((track)=>track.stop());
-            streamRef.current = null;
-            setIsScreenSharing(false);
-            if (videoRef.current) {
-                videoRef.current.srcObject = null;
-            }
-        }
-    }, []);
-    const captureScreen = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(()=>{
-        if (videoRef.current && isScreenSharing) {
-            const canvas = document.createElement('canvas');
-            const video = videoRef.current;
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const ctx = canvas.getContext('2d');
-            if (ctx) {
-                ctx.drawImage(video, 0, 0);
-                return canvas.toDataURL('image/jpeg', 0.8);
-            }
-        }
-        return null;
+    // Cleanup on unmount
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        return ()=>{
+            stopListening();
+            stopVideo();
+            stopSpeaking();
+        };
     }, [
-        isScreenSharing
+        stopListening,
+        stopVideo,
+        stopSpeaking
     ]);
-    const clearError = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(()=>{
-        setError(null);
+    // Initialize canvas context
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        if (canvasRef.current) {
+            contextRef.current = canvasRef.current.getContext('2d');
+        }
     }, []);
+    // Save memory when it changes
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        saveMemory();
+    }, [
+        saveMemory
+    ]);
     return {
-        // Speech Recognition
+        // Voice Recognition
         isListening,
+        isSpeaking,
         transcript,
+        interimTranscript,
         startListening,
         stopListening,
-        // Text to Speech
+        toggleListening,
+        // Text-to-Speech
         speak,
-        isSpeaking,
         stopSpeaking,
-        // Camera
-        videoRef,
-        isCameraActive,
+        // Video/Camera
+        hasVideoPermission,
+        isVideoActive,
+        videoMode,
         startCamera,
-        stopCamera,
-        capturePhoto,
-        // Screen Sharing
-        isScreenSharing,
         startScreenShare,
-        stopScreenShare,
-        captureScreen,
-        // Error handling
-        error,
-        clearError
+        stopVideo,
+        captureFrame,
+        analyzeCurrentView,
+        // Refs
+        videoRef,
+        canvasRef,
+        // Status and Debug
+        permissionStatus,
+        lastError,
+        debugInfo,
+        // Memory
+        userMemory,
+        // Utilities
+        setLastError: (error)=>setLastError(error)
     };
 }
 }}),
