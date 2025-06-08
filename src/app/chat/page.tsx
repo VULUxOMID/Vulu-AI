@@ -8,8 +8,13 @@ import {
   StopIcon,
   CameraIcon,
   PhotoIcon,
-  HomeIcon 
+  HomeIcon,
+  ComputerDesktopIcon,
+  SpeakerWaveIcon,
+  SpeakerXMarkIcon,
+  ExclamationTriangleIcon
 } from '@heroicons/react/24/outline'
+import { useVoiceAndMedia } from '@/hooks/useVoiceAndMedia'
 
 interface Message {
   id: string
@@ -28,9 +33,31 @@ export default function ChatPage() {
     }
   ])
   const [input, setInput] = useState('')
-  const [isListening, setIsListening] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [showVideo, setShowVideo] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  
+  // Voice and Media capabilities
+  const {
+    isListening,
+    transcript,
+    startListening,
+    stopListening,
+    speak,
+    isSpeaking,
+    stopSpeaking,
+    videoRef,
+    isCameraActive,
+    startCamera,
+    stopCamera,
+    capturePhoto,
+    isScreenSharing,
+    startScreenShare,
+    stopScreenShare,
+    captureScreen,
+    error: mediaError,
+    clearError
+  } = useVoiceAndMedia()
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -40,12 +67,13 @@ export default function ChatPage() {
     scrollToBottom()
   }, [messages])
 
-  const handleSendMessage = async () => {
-    if (!input.trim() || isLoading) return
+  const handleSendMessage = async (messageText?: string) => {
+    const textToSend = messageText || input.trim()
+    if (!textToSend || isLoading) return
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      content: input,
+      content: textToSend,
       role: 'user',
       timestamp: new Date()
     }
@@ -54,17 +82,46 @@ export default function ChatPage() {
     setInput('')
     setIsLoading(true)
 
-    // Simulate AI response (replace with actual AI integration later)
-    setTimeout(() => {
+    try {
+      // Send to AI API
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: textToSend,
+          conversationHistory: messages.slice(-10) // Send last 10 messages for context
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.error) {
+        throw new Error(data.error)
+      }
+
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: "I understand you said: \"" + userMessage.content + "\". This is a placeholder response. Soon I'll be connected to real AI capabilities!",
+        content: data.response,
         role: 'assistant',
         timestamp: new Date()
       }
+      
       setMessages(prev => [...prev, assistantMessage])
-      setIsLoading(false)
-    }, 1000)
+      
+      // Speak the response
+      speak(data.response)
+      
+    } catch (error) {
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: "I apologize, but I'm experiencing technical difficulties. Please check your API configuration.",
+        role: 'assistant',
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, errorMessage])
+    }
+    
+    setIsLoading(false)
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -74,16 +131,58 @@ export default function ChatPage() {
     }
   }
 
-  const toggleListening = () => {
-    setIsListening(!isListening)
-    // Voice recognition will be implemented here
-    if (!isListening) {
-      // Start listening
-      console.log('Starting voice recognition...')
-    } else {
-      // Stop listening
-      console.log('Stopping voice recognition...')
+  // Handle voice input
+  useEffect(() => {
+    if (transcript) {
+      setInput(transcript)
+      // Auto-send if transcript ends with clear intent
+      if (transcript.toLowerCase().includes('send') || transcript.toLowerCase().includes('go')) {
+        handleSendMessage(transcript)
+      }
     }
+  }, [transcript])
+
+  const handleImageCapture = async (imageData: string, source: 'camera' | 'screen') => {
+    setIsLoading(true)
+    try {
+      const response = await fetch(imageData)
+      const blob = await response.blob()
+      
+      const formData = new FormData()
+      formData.append('image', blob, `${source}-capture.jpg`)
+      formData.append('prompt', `Analyze this ${source} capture and describe what you see in detail.`)
+
+      const visionResponse = await fetch('/api/vision', {
+        method: 'POST',
+        body: formData
+      })
+
+      const data = await visionResponse.json()
+
+      if (data.error) {
+        throw new Error(data.error)
+      }
+
+      const visionMessage: Message = {
+        id: Date.now().toString(),
+        content: `📸 ${source.charAt(0).toUpperCase() + source.slice(1)} Analysis: ${data.analysis}`,
+        role: 'assistant',
+        timestamp: new Date()
+      }
+      
+      setMessages(prev => [...prev, visionMessage])
+      speak(data.analysis)
+      
+    } catch (error) {
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        content: `Sorry, I couldn't analyze the ${source} capture. Please try again.`,
+        role: 'assistant',
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, errorMessage])
+    }
+    setIsLoading(false)
   }
 
   return (
@@ -110,6 +209,43 @@ export default function ChatPage() {
 
       {/* Chat Container */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Error Display */}
+        {mediaError && (
+          <div className="mb-4 bg-red-500/20 border border-red-500/50 rounded-lg p-4 flex items-center space-x-3">
+            <ExclamationTriangleIcon className="w-5 h-5 text-red-400 flex-shrink-0" />
+            <span className="text-red-300">{mediaError}</span>
+            <button 
+              onClick={clearError}
+              className="ml-auto text-red-400 hover:text-red-300"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        {/* Video Display */}
+        {showVideo && (isCameraActive || isScreenSharing) && (
+          <div className="mb-4 bg-white/5 backdrop-blur-lg rounded-xl border border-white/10 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-white font-medium">
+                {isCameraActive ? '📷 Camera Feed' : '🖥️ Screen Share'}
+              </h3>
+              <button 
+                onClick={() => setShowVideo(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+            <video 
+              ref={videoRef}
+              autoPlay 
+              muted 
+              className="w-full max-w-md mx-auto rounded-lg bg-black"
+            />
+          </div>
+        )}
+
         <div className="bg-white/5 backdrop-blur-lg rounded-2xl border border-white/10 h-[calc(100vh-200px)] flex flex-col">
           
           {/* Messages */}
@@ -152,14 +288,55 @@ export default function ChatPage() {
           {/* Input Area */}
           <div className="border-t border-white/10 p-6">
             <div className="flex items-end space-x-4">
-              {/* Attachment buttons */}
+              {/* Media Controls */}
               <div className="flex space-x-2">
-                <button className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+                <button 
+                  onClick={() => setShowVideo(!showVideo)}
+                  className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                >
                   <PhotoIcon className="w-5 h-5" />
                 </button>
-                <button className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+                <button 
+                  onClick={isCameraActive ? stopCamera : startCamera}
+                  className={`p-2 rounded-lg transition-colors ${
+                    isCameraActive 
+                      ? 'text-green-400 bg-green-400/10' 
+                      : 'text-gray-400 hover:text-white hover:bg-white/10'
+                  }`}
+                >
                   <CameraIcon className="w-5 h-5" />
                 </button>
+                <button 
+                  onClick={isScreenSharing ? stopScreenShare : startScreenShare}
+                  className={`p-2 rounded-lg transition-colors ${
+                    isScreenSharing 
+                      ? 'text-blue-400 bg-blue-400/10' 
+                      : 'text-gray-400 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  <ComputerDesktopIcon className="w-5 h-5" />
+                </button>
+                {(isCameraActive || isScreenSharing) && (
+                  <button 
+                    onClick={() => {
+                      const imageData = isCameraActive ? capturePhoto() : captureScreen()
+                      if (imageData) {
+                        handleImageCapture(imageData, isCameraActive ? 'camera' : 'screen')
+                      }
+                    }}
+                    className="p-2 text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10 rounded-lg transition-colors"
+                  >
+                    📸
+                  </button>
+                )}
+                {isSpeaking && (
+                  <button 
+                    onClick={stopSpeaking}
+                    className="p-2 text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-lg transition-colors"
+                  >
+                    <SpeakerXMarkIcon className="w-5 h-5" />
+                  </button>
+                )}
               </div>
 
               {/* Message input */}
@@ -176,7 +353,7 @@ export default function ChatPage() {
 
               {/* Voice button */}
               <button
-                onClick={toggleListening}
+                onClick={isListening ? stopListening : startListening}
                 className={`p-3 rounded-full transition-all duration-200 ${
                   isListening
                     ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse'
@@ -192,7 +369,7 @@ export default function ChatPage() {
 
               {/* Send button */}
               <button
-                onClick={handleSendMessage}
+                onClick={() => handleSendMessage()}
                 disabled={!input.trim() || isLoading}
                 className="p-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed text-white rounded-full transition-all duration-200 shadow-lg hover:shadow-xl"
               >
