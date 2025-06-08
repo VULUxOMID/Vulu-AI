@@ -1,0 +1,210 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String?
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Subscription info
+  subscription   Subscription?
+  credits        Int           @default(0)
+  totalCredits   Int           @default(0)
+  
+  // Usage tracking
+  conversations  Conversation[]
+  usageRecords   UsageRecord[]
+  payments       Payment[]
+  
+  // Profile
+  preferences    Json?
+  lastLoginAt    DateTime?
+  isActive       Boolean       @default(true)
+  role           UserRole      @default(USER)
+
+  @@map("users")
+}
+
+model Subscription {
+  id          String           @id @default(cuid())
+  userId      String           @unique
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  plan        SubscriptionPlan
+  status      SubscriptionStatus
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  cancelAtPeriodEnd  Boolean    @default(false)
+  
+  stripeCustomerId     String?
+  stripeSubscriptionId String?  @unique
+  stripePriceId        String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("subscriptions")
+}
+
+model Payment {
+  id          String        @id @default(cuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  amount      Decimal       @db.Decimal(10, 2)
+  currency    String        @default("usd")
+  status      PaymentStatus
+  
+  stripePaymentIntentId String? @unique
+  stripeChargeId        String?
+  
+  description String?
+  metadata    Json?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("payments")
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title     String?
+  messages  Message[]
+  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  content        String
+  role           MessageRole
+  
+  // Vision data
+  hasVision      Boolean      @default(false)
+  visionType     VisionType?
+  visionData     Json?
+  
+  // TTS data
+  hasTTS         Boolean      @default(false)
+  ttsData        Json?
+  
+  // Credits used
+  creditsUsed    Int          @default(0)
+  
+  createdAt      DateTime     @default(now())
+
+  @@map("messages")
+}
+
+model UsageRecord {
+  id        String      @id @default(cuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type      UsageType
+  credits   Int
+  metadata  Json?
+  
+  createdAt DateTime    @default(now())
+
+  @@map("usage_records")
+}
+
+model ApiUsage {
+  id           String   @id @default(cuid())
+  service      String   // 'gemini', 'tts', 'vision'
+  endpoint     String
+  tokensUsed   Int?
+  cost         Decimal  @db.Decimal(10, 4)
+  
+  userId       String?
+  metadata     Json?
+  
+  createdAt    DateTime @default(now())
+
+  @@map("api_usage")
+}
+
+model SystemMetric {
+  id        String   @id @default(cuid())
+  metric    String   // 'active_users', 'total_interactions', etc.
+  value     Decimal  @db.Decimal(15, 4)
+  timestamp DateTime @default(now())
+  metadata  Json?
+
+  @@map("system_metrics")
+}
+
+// Enums
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum SubscriptionPlan {
+  WEEKLY
+  MONTHLY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  UNPAID
+  TRIALING
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  CANCELED
+  REFUNDED
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+enum VisionType {
+  CAMERA
+  SCREEN_SHARE
+  IMAGE_UPLOAD
+}
+
+enum UsageType {
+  TEXT_MESSAGE
+  VOICE_RESPONSE
+  VISION_ANALYSIS
+  SUBSCRIPTION_CREDIT
+}

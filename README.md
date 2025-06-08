@@ -1,248 +1,280 @@
-# 🤖 Jarvis v1 - Advanced AI Assistant with Live Vision
+# 🤖 Vulu.ai - Commercial AI Assistant Platform
 
-## 🌟 **NEW: Live Vision Capabilities!**
+> Transform your personal AI assistant into a profitable SaaS business
 
-Jarvis now has **real-time vision** through:
-- **📹 Camera Access**: Jarvis can see you through your webcam
-- **🖥️ Screen Sharing**: Jarvis can see your screen in real-time
-- **👁️ Auto-Analysis**: Periodic analysis of what Jarvis is seeing
-- **🧠 Instant Analysis**: Ask Jarvis what he sees anytime
+## 🌟 **What is Vulu.ai?**
+
+Vulu.ai is a **commercial-grade AI assistant platform** that combines:
+- **🎯 Real-time voice conversations** with Google Neural TTS
+- **👁️ Live vision capabilities** (camera + screen sharing)
+- **🧠 Persistent memory** across sessions
+- **⚡ Instant interruption detection**
+- **💳 Subscription billing** with Stripe
+- **📊 Advanced analytics** and admin dashboard
+
+Built with Next.js, TypeScript, Prisma, and powered entirely by Google AI services.
 
 ---
 
 ## 🚀 **Key Features**
 
-### 🧠 **Persistent Memory**
-- Remembers your name, preferences, and conversation history
-- Learns about you automatically through conversations
-- Saves everything locally using browser storage
-- Welcomes you back with personalized greetings
+### 🎯 **For Users**
+- **Voice Intelligence**: Natural conversations with ultra-realistic TTS
+- **Live Vision**: Real-time camera and screen sharing analysis
+- **Persistent Memory**: Remembers preferences and context
+- **Multi-Platform**: Works on desktop, mobile, and tablets
+- **Credit System**: Transparent usage tracking
+- **Flexible Plans**: Weekly and monthly subscriptions
 
-### 👁️ **Live Vision System**
-- **Camera Mode**: See yourself through your webcam
-- **Screen Share Mode**: Share your screen with Jarvis
-- **Auto-Analysis**: Jarvis automatically analyzes what he sees every 10s/30s/1min
-- **Manual Analysis**: Click "Analyze Now" for instant vision analysis
-- **Smart Integration**: Jarvis includes vision context when you ask "what do you see?"
-
-### 🎤 **Advanced Voice Interaction**
-- **Instant Interruption**: Stop Jarvis mid-sentence by speaking
-- **Multiple Detection Layers**: Speech start, interim results, and speech end detection
-- **High-Quality TTS**: Google Cloud Text-to-Speech with Neural2 voices
-- **Fallback Support**: Browser TTS if cloud services unavailable
-
-### 🤖 **Powerful AI**
-- **Google Gemini**: Advanced reasoning and conversation
-- **Context Awareness**: Remembers conversation history
-- **Vision Understanding**: Can analyze images, screens, and camera feeds
-- **Personality**: Friendly, helpful, and conversational
+### 📊 **For Business Owners**
+- **Admin Dashboard**: Real-time analytics and monitoring
+- **Revenue Tracking**: Subscription management and profit analysis
+- **Usage Analytics**: Detailed insights into user behavior
+- **Cost Monitoring**: Track Google AI API expenses
+- **User Management**: Complete customer lifecycle management
+- **Stripe Integration**: Secure payment processing
 
 ---
 
-## 🔧 **Setup Instructions**
+## 🏗️ **Technology Stack**
 
-### 1. **Google Cloud TTS Setup**
+### **Frontend**
+- **Next.js 14** with App Router
+- **TypeScript** for type safety
+- **Tailwind CSS** for styling
+- **Heroicons** for UI icons
+
+### **Backend**
+- **Next.js API Routes**
+- **Prisma** ORM with PostgreSQL
+- **NextAuth.js** for authentication
+- **Stripe** for payments
+
+### **AI Services**
+- **Google Gemini Vision** for multimodal AI
+- **Google Cloud TTS** for voice synthesis
+- **Web Speech API** for voice recognition
+
+### **Infrastructure**
+- **Vercel** for deployment (recommended)
+- **Supabase** for PostgreSQL database
+- **Stripe** for payment processing
+
+---
+
+## 🎯 **Quick Start**
+
+### 1. **Installation**
 ```bash
-# Place your service account JSON file
-cp your-service-account.json ./jarvis-tts-credentials.json
-
-# Start the TTS server
-python3 google_cloud_tts_server.py
+git clone <your-repo-url>
+cd vulu-ai
+npm install
 ```
 
-### 2. **Configure API Keys**
-Add your Google Gemini API key to `jarvis.js`:
-```javascript
-this.apiKey = 'YOUR_GEMINI_API_KEY_HERE';
+### 2. **Environment Setup**
+Create `.env.local`:
+```env
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/vulu_ai"
+
+# Google AI
+GOOGLE_AI_API_KEY="your_google_ai_api_key"
+
+# NextAuth
+NEXTAUTH_SECRET="your_nextauth_secret"
+NEXTAUTH_URL="http://localhost:3000"
+
+# Stripe
+STRIPE_SECRET_KEY="sk_test_..."
+STRIPE_PUBLISHABLE_KEY="pk_test_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+
+# Google OAuth (optional)
+GOOGLE_CLIENT_ID="your_google_client_id"
+GOOGLE_CLIENT_SECRET="your_google_client_secret"
 ```
 
-### 3. **Launch Jarvis**
+### 3. **Database Setup**
 ```bash
-# Open in browser
-open index.html
-# or serve with a local server
-python3 -m http.server 8000
+npx prisma generate
+npx prisma db push
+```
+
+### 4. **Start Development**
+```bash
+npm run dev
+```
+
+Visit `http://localhost:3000` to see your Vulu.ai platform!
+
+---
+
+## 💰 **Business Model**
+
+### **Pricing Structure**
+- **Weekly Plan**: $9.99/week (1,000 credits)
+- **Monthly Plan**: $29.99/month (5,000 credits)
+
+### **Credit Usage**
+- **Text Messages**: 1 credit per message
+- **Vision Analysis**: 3 credits per analysis
+- **Voice Responses**: 1 credit per TTS generation
+
+### **Revenue Projections**
+With 1,000 active users at 70% monthly conversion:
+- **Monthly Revenue**: ~$20,993
+- **Google AI Costs**: ~$2,500
+- **Net Profit**: ~$18,493/month
+
+---
+
+## 📊 **Admin Dashboard**
+
+Access the admin dashboard at `/admin` to monitor:
+
+- **📈 Real-time Analytics**: User growth, revenue, usage stats
+- **💰 Revenue Tracking**: Subscription analytics and profit margins
+- **🔧 System Health**: API latency, uptime, error rates
+- **👥 User Management**: Customer insights and support tools
+- **💳 Payment Analytics**: Stripe integration and billing reports
+
+---
+
+## 🚀 **Deployment**
+
+### **Recommended: Vercel + Supabase**
+
+1. **Deploy to Vercel**:
+   ```bash
+   npm install -g vercel
+   vercel --prod
+   ```
+
+2. **Set up Supabase**:
+   - Create account at [supabase.com](https://supabase.com)
+   - Create new project
+   - Copy connection string to `DATABASE_URL`
+
+3. **Configure Domain**:
+   - Point `vulu.ai` to your Vercel deployment
+   - Update `NEXTAUTH_URL` to your domain
+
+4. **Set up Stripe Webhooks**:
+   - Configure webhook endpoint: `https://vulu.ai/api/webhooks/stripe`
+   - Update `STRIPE_WEBHOOK_SECRET`
+
+---
+
+## 🔧 **Configuration**
+
+### **Subscription Plans**
+Edit plans in `src/app/pricing/page.tsx`:
+```typescript
+const plans = [
+  {
+    name: 'Weekly Plan',
+    price: 9.99,
+    credits: 1000,
+    stripePriceId: 'price_weekly'
+  },
+  // Add more plans...
+]
+```
+
+### **Credit Costs**
+Adjust credit usage in `src/app/app/page.tsx`:
+```typescript
+// Text message: 1 credit
+setCurrentCredits(prev => Math.max(0, prev - 1))
+
+// Vision analysis: 3 credits  
+setCurrentCredits(prev => Math.max(0, prev - 3))
 ```
 
 ---
 
-## 📱 **How to Use**
+## 📱 **API Endpoints**
 
-### 🎤 **Voice Commands**
-1. Click "Start Listening" or the microphone
-2. Speak naturally to Jarvis
-3. Jarvis will respond with voice and text
-4. Speak anytime to interrupt Jarvis
+### **User Management**
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `GET /api/user/profile` - Get user profile
+- `PUT /api/user/profile` - Update user profile
 
-### 👁️ **Vision Features**
-1. **Camera**: Click "📹 Camera" to let Jarvis see you
-2. **Screen Share**: Click "🖥️ Screen Share" to show your screen
-3. **Auto-Analysis**: Enable to get periodic observations
-4. **Manual Check**: Click "👁️ Analyze Now" for instant analysis
-5. **Ask Questions**: "What do you see?" "Analyze my screen" etc.
+### **Subscriptions**
+- `POST /api/subscriptions/create` - Create subscription
+- `GET /api/subscriptions/status` - Get subscription status
+- `POST /api/subscriptions/cancel` - Cancel subscription
 
-### 🧠 **Memory & Conversations**
-- Jarvis automatically learns about you
-- All conversations are saved locally
-- Clear conversation history with "Clear Chat"
-- Persistent across browser sessions
+### **Usage Tracking**
+- `POST /api/usage/record` - Record usage
+- `GET /api/usage/stats` - Get usage statistics
+- `POST /api/credits/deduct` - Deduct credits
 
----
-
-## 🏗️ **System Architecture**
-
-```
-🎤 Speech Recognition (Browser)
-    ↓
-🧠 Google Gemini AI (Cloud)
-    ↓
-👁️ Google Gemini Vision (Cloud) ← 📹 Camera/Screen
-    ↓
-🗣️ Google Cloud TTS (Cloud)
-    ↓
-🔊 Audio Output (Browser)
-```
-
-### **Core Components**
-- **jarvis.js**: Main AI logic with vision and memory
-- **google_cloud_tts_server.py**: Google TTS with service account
-- **index.html**: Clean, modern UI with vision controls
-- **styles.css**: Beautiful gradient styling
+### **Admin**
+- `GET /api/admin/analytics` - Get analytics data
+- `GET /api/admin/users` - Get user list
+- `GET /api/admin/revenue` - Get revenue data
 
 ---
 
-## 🎯 **Vision Capabilities**
+## 🛡️ **Security**
 
-### **Camera Mode**
-- Access your webcam feed
-- See yourself in real-time
-- Auto-analysis of facial expressions, activities
-- "What am I doing?" "How do I look?" questions
-
-### **Screen Share Mode** 
-- Share your entire screen or specific windows
-- Real-time analysis of what you're working on
-- Help with coding, design, presentations
-- "What's on my screen?" "Help me with this code"
-
-### **Smart Analysis**
-- Automatic periodic analysis (configurable intervals)
-- Context-aware observations
-- Only speaks when something interesting happens
-- Cost-efficient (Google Vision pricing ~$0.0025/image)
+- **Authentication**: NextAuth.js with secure session management
+- **Authorization**: Role-based access control (USER/ADMIN)
+- **Data Protection**: Encrypted sensitive data
+- **Rate Limiting**: API endpoint protection
+- **CORS**: Proper cross-origin configuration
+- **Input Validation**: Sanitized user inputs
 
 ---
 
-## 💡 **Example Interactions**
+## 📈 **Scaling**
 
-### **With Camera**
-```
-You: "How do I look today?"
-Jarvis: 👁️ "You look great! I can see you're in a well-lit room, and you appear to be in a good mood. Your setup looks professional with good lighting."
-```
+### **Performance Optimization**
+- **CDN**: Static assets via Vercel Edge Network
+- **Database**: Connection pooling with Prisma
+- **Caching**: Redis for session and API caching
+- **Monitoring**: Real-time error tracking
 
-### **With Screen Share**
-```
-You: "Help me with this code"
-Jarvis: 👁️ "I can see you're working on a JavaScript function. I notice there's a syntax error on line 15 - you're missing a closing bracket. Would you like me to help you fix it?"
-```
-
-### **Auto-Analysis**
-```
-Jarvis: 👁️ "I notice you've switched to your email application. Your inbox looks quite full - would you like some tips on email management?"
-```
+### **Infrastructure Scaling**
+- **Horizontal Scaling**: Multiple Vercel deployments
+- **Database**: PostgreSQL read replicas
+- **AI Services**: Google Cloud quotas and rate limits
+- **Payment Processing**: Stripe's global infrastructure
 
 ---
 
-## 🛡️ **Privacy & Security**
+## 🤝 **Contributing**
 
-- **Local Storage**: All conversations stored locally in browser
-- **No Data Sharing**: Personal information never leaves your device
-- **Permission-Based**: Camera/screen access only when explicitly granted
-- **Secure APIs**: All cloud requests use HTTPS
-- **Service Account**: Google services use secure authentication
-
----
-
-## 🎨 **Customization**
-
-### **Vision Settings**
-- Auto-analysis intervals: 10s, 30s, or 1 minute
-- Enable/disable automatic observations
-- Manual analysis on demand
-
-### **Voice Settings**
-- Multiple voice options through Google Cloud TTS
-- Adjustable speech rate and pitch
-- Fallback to browser voices if needed
-
-### **UI Customization**
-- Modern gradient design
-- Responsive layout
-- Vision controls and status indicators
-- Real-time video preview
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
 
 ---
 
-## 🔧 **Technical Details**
+## 📞 **Support**
 
-### **Live Vision Implementation**
-```javascript
-// Camera access
-navigator.mediaDevices.getUserMedia({
-    video: { width: 1280, height: 720 }
-});
-
-// Screen sharing
-navigator.mediaDevices.getDisplayMedia({
-    video: { width: 1920, height: 1080 }
-});
-
-// Frame capture for analysis
-canvas.getContext('2d').drawImage(video, 0, 0);
-const frame = canvas.toDataURL('image/jpeg', 0.8);
-```
-
-### **Memory System**
-```javascript
-// Persistent storage
-localStorage.setItem('jarvis_memory', JSON.stringify(userMemory));
-localStorage.setItem('jarvis_conversations', JSON.stringify(history));
-```
-
-### **Interruption Detection**
-```javascript
-// Multi-layer interruption
-recognition.onspeechstart = () => stopCurrentSpeech();
-recognition.onspeechend = () => updateStatus('Processing...');
-recognition.onresult = (event) => {
-    if (interim && isProcessing) stopCurrentSpeech();
-};
-```
+- **Documentation**: [docs.vulu.ai](https://docs.vulu.ai)
+- **Support Email**: support@vulu.ai
+- **Discord**: [discord.gg/vulu-ai](https://discord.gg/vulu-ai)
 
 ---
 
-## 🚀 **What's Next?**
+## 📄 **License**
 
-- **Object Detection**: Identify specific objects in camera/screen
-- **Gesture Recognition**: Respond to hand gestures and movements  
-- **Screen Region Analysis**: Focus on specific areas of the screen
-- **Multi-Modal Interaction**: Combine voice, vision, and text simultaneously
-- **Real-time Collaboration**: Share vision sessions with others
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🎉 **Ready to Experience the Future?**
+## 🎉 **Success Story**
 
-Jarvis v1 combines the best of modern AI with intuitive voice and vision interfaces. Start a conversation, share your screen, or just let Jarvis see the world through your camera. The future of AI assistance is here!
+*"Started as a personal Jarvis assistant, transformed into a profitable SaaS platform serving thousands of users worldwide."*
 
-**🔥 Key Highlights:**
-- ✅ Real-time camera and screen vision
-- ✅ Persistent memory across sessions  
-- ✅ Instant voice interruption
-- ✅ Google's most advanced AI models
-- ✅ Beautiful, modern interface
-- ✅ Privacy-focused local storage
-- ✅ Professional-grade voice synthesis
+**Ready to launch your AI empire?** 🚀
 
-**Start your conversation with Jarvis today!** 🎤👁️🤖 
+---
+
+**Made with ❤️ by the Vulu.ai team**
